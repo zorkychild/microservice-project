@@ -1,11 +1,13 @@
-use std::sync::Mutex;
+use std::{collections::HashMap, sync::Mutex};
 
 mod auth;
 mod sessions;
 mod users;
 
 use auth::*;
+use authentication::SignInResponse;
 use sessions::{SessionsImpl, Sessions};
+use tonic::service;
 use users::{UsersImpl, Users};
 
 #[tokio::main]
@@ -15,10 +17,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Port 50051 is the recommended gRPC port.
     let addr = "[::0]:50051".parse()?;
 
-    let users_service: Box<Mutex<dyn Users + Send + Sync + 'static>> = todo!(); // Create user service instance
-    let sessions_service: Box<Mutex<dyn Sessions + Send + Sync + 'static>> = todo!(); //Create session service instance
+    let users_service: Box<Mutex<dyn Users + Send + Sync + 'static>> = Box::new(Mutex::new(UsersImpl::default())); // Create user service instance
+    let sessions_service: Box<Mutex<dyn Sessions + Send + Sync + 'static>> = Box::new(Mutex::new(SessionsImpl::default())); //Create session service instance
 
     let auth_service = AuthService::new(users_service, sessions_service);
+    
 
     // Instantiate gRPC server
     Server::builder()

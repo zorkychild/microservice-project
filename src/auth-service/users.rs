@@ -40,10 +40,15 @@ impl Users for UsersImpl {
             .map_err(|e| format!("Failed to hash password.\n{e:?}"))?
             .to_string();
 
-        let user: User = User { user_uuid: salt.to_string(), username: username, password: hashed_password }; // Create new user with unique uuid and hashed password.
+        let user: User = User {
+            user_uuid: Uuid::new_v4().to_string(),
+            username: username,
+            password: hashed_password,
+        }; // Create new user with unique uuid and hashed password.
 
         // TODO: Add user to `username_to_user` and `uuid_to_user`.
-        self.uuid_to_user.insert(user.user_uuid.clone(), user.clone());
+        self.uuid_to_user
+            .insert(user.user_uuid.clone(), user.clone());
         self.username_to_user.insert(user.username.clone(), user);
 
         Ok(())
@@ -55,7 +60,7 @@ impl Users for UsersImpl {
         //     return None;
         // };
 
-        // Get user's password as `PasswordHash` instance. 
+        // Get user's password as `PasswordHash` instance.
         let hashed_password = user.password.clone();
         let parsed_hash = PasswordHash::new(&hashed_password).ok()?;
 
@@ -72,7 +77,7 @@ impl Users for UsersImpl {
 
     fn delete_user(&mut self, user_uuid: String) {
         // TODO: Remove user from `username_to_user` and `uuid_to_user`.
-        
+
         if let Some(user) = self.uuid_to_user.remove(&user_uuid) {
             self.username_to_user.remove(&user.username);
             println!("Delete Successful");
