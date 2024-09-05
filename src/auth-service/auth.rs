@@ -112,7 +112,6 @@ impl Auth for AuthService {
         println!("Got a request: {:?}", request);
 
         let req = request.into_inner();
-        let reqkey = self.sessions_service.lock().unwrap();
         
 
         // TODO: Delete session using `sessions_service`.

@@ -25,8 +25,10 @@ impl Sessions for SessionsImpl {
 
     fn delete_session(&mut self, session_token: &str) {
         // TODO: Delete session from `uuid_to_session`.
+        println!("before retain, length is : {}", self.uuid_to_session.len());
         self.uuid_to_session.retain(|_, v| v.ne(&session_token));
         // self.uuid_to_session.remove(user_uuid);
+        println!("after retain, length is : {}", self.uuid_to_session.len());
     }
 }
 
